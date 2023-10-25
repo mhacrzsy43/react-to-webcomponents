@@ -153,9 +153,11 @@ function initSpotLight() {
 
 function initCylinder() {
     const geometry = new CylinderGeometry(10, 10, 20, 20)
+    const texture = new TextureLoader().load(messi)
     const material = new MeshPhysicalMaterial({
         color: 0x6c6c6c,
-        side: DoubleSide
+        side: DoubleSide,
+        map:texture
     })
 
     const cylinder = new Mesh(geometry, material)

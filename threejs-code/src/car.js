@@ -1,10 +1,7 @@
 import * as THREE from 'three'
-import { BoxGeometry, DoubleSide } from 'three';
+import { DoubleSide} from 'three';
 import { Mesh } from 'three';
-import { AxesHelper } from 'three';
 import { TextureLoader } from 'three';
-import { GridHelper } from 'three';
-import { MeshBasicMaterial } from 'three';
 import { WebGLRenderer } from 'three';
 import { PerspectiveCamera } from 'three';
 import { Scene } from 'three';
@@ -22,18 +19,26 @@ import { Raycaster } from 'three';
 import messi from './public/messi2.jpg'
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper'
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
-
+import { Lensflare, LensflareElement } from 'three/examples/jsm/objects/Lensflare.js';
 
 const TWEEN = require('@tweenjs/tween.js')
 
+let degVec = {
+	p1: new THREE.Vector3(-451, 144, -140),
+	p2: new THREE.Vector3(-451, 144, 140),
+	l1: new THREE.Object3D(),
+	l2: new THREE.Object3D(),
+	isLight: true,
+};
 
-let scene, camera, renderer, controls, mesh;
+let scene, camera, renderer, controls;
+let headlight, carHeadlight;
 let left_doors = []
 let right_doors = []
 let carStatus;
 // 车身材质
 let bodyMaterial = new THREE.MeshPhysicalMaterial({
-    color: "#6e2121",
+    color: "#FF0000",
     metalness: 1,
     roughness: 0.5,
     clearcoat: 1.0,
@@ -77,24 +82,56 @@ function initRenderer() {
     document.body.appendChild(renderer.domElement)
 }
 
-function loadCarModal() {
+//是否自动转动
+const autoRotate = () => {
+ controls.autoRotate = true
+}
+//停止转动
+const stopRotate = () => {
+ controls.autoRotate = false
+}
+
+
+
+function turnOnHeadlight() {
+    degVec.isLight = !degVec.isLight
+}
+
+function turnOffHeadlight() {
+    if (headlight) {
+        scene.remove(headlight);
+        headlight = undefined;
+    }
+
+    // 根据需要调整材质来反映关灯状态
+    // 例如，可以降低 emissive 或者改变颜色
+    if (carHeadlight.material.emissive) {
+        carHeadlight.material.emissive.setHex(0x000000);
+    }
+}
+  
+
+function loadCarModel() {
     new GLTFLoader().load(Lamborghini, function(gltf){
         const carModel = gltf.scene
-        carModel.position.y = 1
+        carModel.position.y = 0.75
         carModel.traverse((obj)=>{
-            if(obj.name.includes('skirt_') || obj.name.includes('boot_') || obj.name.includes('bodyshell_') || obj.name.includes('bump_') || obj.name.includes('bonnet_')){
+            if(obj.name.includes('skirt_') || obj.name.includes('boot_') || obj.name.includes('bodyshell_') 
+            || obj.name.includes('bump_') || obj.name.includes('bonnet_') || obj.name === 'door_pside_r_primary_0' 
+            || obj.name === 'door_pside_f_primary_0' || obj.name == 'door_dside_f_primary_0' || obj.name == 'door_dside_r_primary_0'){
                 //车身
                 obj.material = bodyMaterial 
             }else if(obj.name.includes('window_')){
                 //玻璃
                 obj.material = glassMaterial 
-
             }else if(obj.name == 'door_dside_r' || obj.name === 'door_dside_f') {
                 left_doors.push(obj) 
                 obj.material = bodyMaterial
             }else if(obj.name === 'door_pside_r' || obj.name === 'door_pside_f'){
                 right_doors.push(obj)
                 obj.material = bodyMaterial
+            }else if (obj.name === 'chassis.7' || obj.name === 'glass_rr001_glass001_0') {
+                carHeadlight = obj;
             }
             obj.castShadow = true;
         })
@@ -109,12 +146,6 @@ function initAmbientLight() {
     scene.add(ambientLight)
 }
 
-function initGripHelper() {
-    let grid = new GridHelper(20, 40, 'red', 0xffffff)
-    grid.material.opacity = 0.2
-    grid.material.transparent = true
-    scene.add(grid)
-}
 
 function initFloor() {
     const floorGeometry = new PlaneGeometry(20, 20)
@@ -169,7 +200,7 @@ function initController() {
 
     controls.enableDamping = true
 
-    controls.maxDistance = 9
+    controls.maxDistance = 8
     controls.minDistance = 1
 
     controls.minPolarAngle = 0
@@ -186,7 +217,8 @@ function initGUI() {
         carOpen,
         carClose,
         carIn,
-        carOut
+        carOut,
+        turnOnHeadlight
     };
 
     const gui = new GUI();
@@ -203,6 +235,7 @@ function initGUI() {
 
     gui.add(obj, "carIn").name('车内视角')
     gui.add(obj, "carOut").name('车外视角')
+    gui.add(obj, "turnOnHeadlight").name('开车灯')
 }
 
 function carOpen() {
@@ -346,7 +379,7 @@ function init() {
     initScene()
     initCamera()
     initRenderer()
-    loadCarModal()
+    loadCarModel()
     initAmbientLight()
     initFloor()
     initSpotLight()
@@ -354,27 +387,70 @@ function init() {
     initMessiLight()
     initCylinder()
     initController()
-    initGUI()
+    // initGUI()
 
     initMutilColor()
+
+    setTimeout(() => {
+        lensflares()
+    },3000)
 }
 
 init()
 
+function resizeFlares(deg1, deg2) {
+	if (!degVec.isLight) {
+		degVec.l1.visible = false;
+		degVec.l2.visible = false;
+	} else {
+		if (deg1 < 90 && deg2 < 90) {
+			degVec.l1.visible = true;
+			degVec.l2.visible = true;
+		} else if (deg1 <= 90) {
+			degVec.l1.visible = true;
+			degVec.l2.visible = false;
+		} else if (deg2 <= 90) {
+			degVec.l1.visible = false;
+			degVec.l2.visible = true;
+		} else {
+			degVec.l1.visible = false;
+			degVec.l2.visible = false;
+		}
+	}
+}
+
+function lensflares() {
+	var textureLoader = new THREE.TextureLoader();
+	var textureFlare0 = textureLoader.load("./public/lensflare/po.png");
+	var colorLight = new THREE.Color(0xffffff);
+	addLight2(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z, -388, 188, -138, degVec.l1, 125, colorLight);
+	addLight2(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z, -388, 188, 138, degVec.l2, 125, colorLight);
+	addLight2(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z, -388, 132, -144, degVec.l1, 100, colorLight);
+	addLight2(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z, -388, 132, 144, degVec.l2, 100, colorLight);
+
+	function addLight2(h, s, l, x, y, z, obj, size, color) {
+		var lensflare = new Lensflare();
+		lensflare.addElement(
+			new LensflareElement(textureFlare0, size, 0, color)
+		);
+		obj.add(lensflare);
+		obj.visible = false;
+		scene.add(obj);
+		lensflare.position.set(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z);
+	}
+}
+
 
 function render(time) {
-
-    // if (mesh.position.x > 3) {
-
-    // } else {
-    //     mesh.position.x += 0.01
-    // }
-
     renderer.render(scene, camera)
     requestAnimationFrame(render)
-
+    
     TWEEN.update(time)
     controls.update()
+
+    var deg1 = THREE.MathUtils.radToDeg(degVec.p1.angleTo(camera.position));
+	var deg2 = THREE.MathUtils.radToDeg(degVec.p2.angleTo(camera.position));
+	resizeFlares(deg1, deg2);
 }
 
 render()
@@ -416,3 +492,43 @@ function onPointClick(event) {
 
 
 }
+
+function recivedMessage(event){
+    console.log('收到消息recivedMessage:',event)
+    switch(event.data){
+        case 'carOpen':
+            carOpen()
+            break;
+        case 'carClose':
+            carClose()
+            break;
+        case 'carIn':
+            carIn()
+            break;
+        case 'carOut':
+            carOut()
+            break;
+        case 'changeToGoldColor':
+            bodyMaterial.color.set('#a5a815')
+            break;
+        case 'changeToBlackColor':
+            bodyMaterial.color.set('#000000')
+            alert('变黑色')
+            break;
+        case 'autoRotate':
+            autoRotate()
+            break;
+        case 'stopRotate':
+            stopRotate()
+            break;
+        case 'turnOnHeadlight':
+            turnOnHeadlight()
+            break;
+        case 'turnOffHeadlight':
+            turnOffHeadlight()
+            break;
+    }
+}
+// 监听来自 iframe 的消息
+window.addEventListener('message', recivedMessage, false);
+  

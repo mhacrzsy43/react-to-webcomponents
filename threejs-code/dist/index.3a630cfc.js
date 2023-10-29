@@ -544,14 +544,23 @@ var _messi2Jpg = require("./public/messi2.jpg");
 var _messi2JpgDefault = parcelHelpers.interopDefault(_messi2Jpg);
 var _rectAreaLightHelper = require("three/examples/jsm/helpers/RectAreaLightHelper");
 var _rectAreaLightUniformsLibJs = require("three/examples/jsm/lights/RectAreaLightUniformsLib.js");
-const TWEEN = require("3adad758658593eb");
-let scene, camera, renderer, controls, mesh;
+var _lensflareJs = require("three/examples/jsm/objects/Lensflare.js");
+const TWEEN = require("237200784f3d23de");
+let degVec = {
+    p1: new _three.Vector3(-451, 144, -140),
+    p2: new _three.Vector3(-451, 144, 140),
+    l1: new _three.Object3D(),
+    l2: new _three.Object3D(),
+    isLight: true
+};
+let scene, camera, renderer, controls;
+let headlight, carHeadlight;
 let left_doors = [];
 let right_doors = [];
 let carStatus;
 // 车身材质
 let bodyMaterial = new _three.MeshPhysicalMaterial({
-    color: "#6e2121",
+    color: "#FF0000",
     metalness: 1,
     roughness: 0.5,
     clearcoat: 1.0,
@@ -585,12 +594,32 @@ function initRenderer() {
     renderer.toneMapping = _three.ACESFilmicToneMapping;
     document.body.appendChild(renderer.domElement);
 }
-function loadCarModal() {
+//是否自动转动
+const autoRotate = ()=>{
+    controls.autoRotate = true;
+};
+//停止转动
+const stopRotate = ()=>{
+    controls.autoRotate = false;
+};
+function turnOnHeadlight() {
+    degVec.isLight = !degVec.isLight;
+}
+function turnOffHeadlight() {
+    if (headlight) {
+        scene.remove(headlight);
+        headlight = undefined;
+    }
+    // 根据需要调整材质来反映关灯状态
+    // 例如，可以降低 emissive 或者改变颜色
+    if (carHeadlight.material.emissive) carHeadlight.material.emissive.setHex(0x000000);
+}
+function loadCarModel() {
     new (0, _gltfloader.GLTFLoader)().load((0, _teslaModelP100DGlbDefault.default), function(gltf) {
         const carModel = gltf.scene;
-        carModel.position.y = 1;
+        carModel.position.y = 0.75;
         carModel.traverse((obj)=>{
-            if (obj.name.includes("skirt_") || obj.name.includes("boot_") || obj.name.includes("bodyshell_") || obj.name.includes("bump_") || obj.name.includes("bonnet_")) //车身
+            if (obj.name.includes("skirt_") || obj.name.includes("boot_") || obj.name.includes("bodyshell_") || obj.name.includes("bump_") || obj.name.includes("bonnet_") || obj.name === "door_pside_r_primary_0" || obj.name === "door_pside_f_primary_0" || obj.name == "door_dside_f_primary_0" || obj.name == "door_dside_r_primary_0") //车身
             obj.material = bodyMaterial;
             else if (obj.name.includes("window_")) //玻璃
             obj.material = glassMaterial;
@@ -600,7 +629,7 @@ function loadCarModal() {
             } else if (obj.name === "door_pside_r" || obj.name === "door_pside_f") {
                 right_doors.push(obj);
                 obj.material = bodyMaterial;
-            }
+            } else if (obj.name === "chassis.7" || obj.name === "glass_rr001_glass001_0") carHeadlight = obj;
             obj.castShadow = true;
         });
         scene.add(carModel);
@@ -609,12 +638,6 @@ function loadCarModal() {
 function initAmbientLight() {
     var ambientLight = new (0, _three.AmbientLight)("#fff", 0.5);
     scene.add(ambientLight);
-}
-function initGripHelper() {
-    let grid = new (0, _three.GridHelper)(20, 40, "red", 0xffffff);
-    grid.material.opacity = 0.2;
-    grid.material.transparent = true;
-    scene.add(grid);
 }
 function initFloor() {
     const floorGeometry = new (0, _three.PlaneGeometry)(20, 20);
@@ -648,9 +671,11 @@ function initSpotLight() {
 }
 function initCylinder() {
     const geometry = new (0, _three.CylinderGeometry)(10, 10, 20, 20);
+    const texture = new (0, _three.TextureLoader)().load((0, _messi2JpgDefault.default));
     const material = new (0, _three.MeshPhysicalMaterial)({
         color: 0x6c6c6c,
-        side: (0, _three.DoubleSide)
+        side: (0, _three.DoubleSide),
+        map: texture
     });
     const cylinder = new (0, _three.Mesh)(geometry, material);
     scene.add(cylinder);
@@ -658,7 +683,7 @@ function initCylinder() {
 function initController() {
     controls = new (0, _orbitControls.OrbitControls)(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.maxDistance = 9;
+    controls.maxDistance = 8;
     controls.minDistance = 1;
     controls.minPolarAngle = 0;
     controls.maxPolarAngle = 80 / 360 * 2 * Math.PI;
@@ -671,7 +696,8 @@ function initGUI() {
         carOpen,
         carClose,
         carIn,
-        carOut
+        carOut,
+        turnOnHeadlight
     };
     const gui = new (0, _lilGuiDefault.default)();
     gui.addColor(obj, "bodyColor").name("车身颜色").onChange((value)=>{
@@ -684,6 +710,7 @@ function initGUI() {
     gui.add(obj, "carClose").name("关门车门");
     gui.add(obj, "carIn").name("车内视角");
     gui.add(obj, "carOut").name("车外视角");
+    gui.add(obj, "turnOnHeadlight").name("开车灯");
 }
 function carOpen() {
     carStatus = "open";
@@ -845,26 +872,65 @@ function init() {
     initScene();
     initCamera();
     initRenderer();
-    loadCarModal();
+    loadCarModel();
     initAmbientLight();
     initFloor();
     initSpotLight();
     initMessiLight();
     initCylinder();
     initController();
-    initGUI();
+    // initGUI()
     initMutilColor();
+    setTimeout(()=>{
+        lensflares();
+    }, 3000);
 }
 init();
+function resizeFlares(deg1, deg2) {
+    if (!degVec.isLight) {
+        degVec.l1.visible = false;
+        degVec.l2.visible = false;
+    } else {
+        if (deg1 < 90 && deg2 < 90) {
+            degVec.l1.visible = true;
+            degVec.l2.visible = true;
+        } else if (deg1 <= 90) {
+            degVec.l1.visible = true;
+            degVec.l2.visible = false;
+        } else if (deg2 <= 90) {
+            degVec.l1.visible = false;
+            degVec.l2.visible = true;
+        } else {
+            degVec.l1.visible = false;
+            degVec.l2.visible = false;
+        }
+    }
+}
+function lensflares() {
+    var textureLoader = new _three.TextureLoader();
+    var textureFlare0 = textureLoader.load("./public/lensflare/po.png");
+    var colorLight = new _three.Color(0xffffff);
+    addLight2(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z, -388, 188, -138, degVec.l1, 125, colorLight);
+    addLight2(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z, -388, 188, 138, degVec.l2, 125, colorLight);
+    addLight2(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z, -388, 132, -144, degVec.l1, 100, colorLight);
+    addLight2(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z, -388, 132, 144, degVec.l2, 100, colorLight);
+    function addLight2(h, s, l, x, y, z, obj, size, color) {
+        var lensflare = new (0, _lensflareJs.Lensflare)();
+        lensflare.addElement(new (0, _lensflareJs.LensflareElement)(textureFlare0, size, 0, color));
+        obj.add(lensflare);
+        obj.visible = false;
+        scene.add(obj);
+        lensflare.position.set(carHeadlight.position.x, carHeadlight.position.y, carHeadlight.position.z);
+    }
+}
 function render(time) {
-    // if (mesh.position.x > 3) {
-    // } else {
-    //     mesh.position.x += 0.01
-    // }
     renderer.render(scene, camera);
     requestAnimationFrame(render);
     TWEEN.update(time);
     controls.update();
+    var deg1 = _three.MathUtils.radToDeg(degVec.p1.angleTo(camera.position));
+    var deg2 = _three.MathUtils.radToDeg(degVec.p2.angleTo(camera.position));
+    resizeFlares(deg1, deg2);
 }
 render();
 window.addEventListener("resize", function() {
@@ -892,8 +958,46 @@ function onPointClick(event) {
         }
     });
 }
+function recivedMessage(event) {
+    console.log("收到消息recivedMessage:", event);
+    switch(event.data){
+        case "carOpen":
+            carOpen();
+            break;
+        case "carClose":
+            carClose();
+            break;
+        case "carIn":
+            carIn();
+            break;
+        case "carOut":
+            carOut();
+            break;
+        case "changeToGoldColor":
+            bodyMaterial.color.set("#a5a815");
+            break;
+        case "changeToBlackColor":
+            bodyMaterial.color.set("#000000");
+            alert("变黑色");
+            break;
+        case "autoRotate":
+            autoRotate();
+            break;
+        case "stopRotate":
+            stopRotate();
+            break;
+        case "turnOnHeadlight":
+            turnOnHeadlight();
+            break;
+        case "turnOffHeadlight":
+            turnOffHeadlight();
+            break;
+    }
+}
+// 监听来自 iframe 的消息
+window.addEventListener("message", recivedMessage, false);
 
-},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","lil-gui":"fkEfG","./public/messi2.jpg":"58p3a","three/examples/jsm/helpers/RectAreaLightHelper":"7YxXx","three/examples/jsm/lights/RectAreaLightUniformsLib.js":"kWNzB","3adad758658593eb":"7DfAI","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./public/model/tesla_model_p100d.glb":"65SW3"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","lil-gui":"fkEfG","./public/messi2.jpg":"58p3a","three/examples/jsm/helpers/RectAreaLightHelper":"7YxXx","three/examples/jsm/lights/RectAreaLightUniformsLib.js":"kWNzB","237200784f3d23de":"7DfAI","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./public/model/tesla_model_p100d.glb":"65SW3","three/examples/jsm/objects/Lensflare.js":"2AyDW"}],"ktPTu":[function(require,module,exports) {
 /**
  * @license
  * Copyright 2010-2022 Three.js Authors
@@ -34817,9 +34921,9 @@ class GUI {
 exports.default = GUI;
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"58p3a":[function(require,module,exports) {
-module.exports = require("9c7f943d4caa30c8").getBundleURL("8vuqW") + "messi2.a8df5d99.jpg" + "?" + Date.now();
+module.exports = require("eb5ccdfb1523a8f8").getBundleURL("8vuqW") + "messi2.a8df5d99.jpg" + "?" + Date.now();
 
-},{"9c7f943d4caa30c8":"lgJ39"}],"lgJ39":[function(require,module,exports) {
+},{"eb5ccdfb1523a8f8":"lgJ39"}],"lgJ39":[function(require,module,exports) {
 "use strict";
 var bundleURL = {};
 function getBundleURLCached(id) {
@@ -67777,7 +67881,7 @@ parcelHelpers.export(exports, "now", ()=>now$1);
 parcelHelpers.export(exports, "remove", ()=>remove);
 parcelHelpers.export(exports, "removeAll", ()=>removeAll);
 parcelHelpers.export(exports, "update", ()=>update);
-var process = require("b432569af899e666");
+var process = require("4340f0c111cb98c6");
 var Easing = {
     Linear: {
         None: function(amount) {
@@ -68413,7 +68517,7 @@ var exports = {
 };
 exports.default = exports;
 
-},{"b432569af899e666":"d5jf4","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"d5jf4":[function(require,module,exports) {
+},{"4340f0c111cb98c6":"d5jf4","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"d5jf4":[function(require,module,exports) {
 // shim for using process in browser
 var process = module.exports = {};
 // cached from whatever global is present so that test runners that stub it
@@ -68559,8 +68663,337 @@ process.umask = function() {
 };
 
 },{}],"65SW3":[function(require,module,exports) {
-module.exports = require("4fc7f9ada48cffd").getBundleURL("8vuqW") + "tesla_model_p100d.86e2c6a6.glb" + "?" + Date.now();
+module.exports = require("bec5e35127a17f25").getBundleURL("8vuqW") + "tesla_model_p100d.86e2c6a6.glb" + "?" + Date.now();
 
-},{"4fc7f9ada48cffd":"lgJ39"}]},["jTVc4","1zts3"], "1zts3", "parcelRequire0487")
+},{"bec5e35127a17f25":"lgJ39"}],"2AyDW":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Lensflare", ()=>Lensflare);
+parcelHelpers.export(exports, "LensflareElement", ()=>LensflareElement);
+var _three = require("three");
+class Lensflare extends (0, _three.Mesh) {
+    constructor(){
+        super(Lensflare.Geometry, new (0, _three.MeshBasicMaterial)({
+            opacity: 0,
+            transparent: true
+        }));
+        this.isLensflare = true;
+        this.type = "Lensflare";
+        this.frustumCulled = false;
+        this.renderOrder = Infinity;
+        //
+        const positionScreen = new (0, _three.Vector3)();
+        const positionView = new (0, _three.Vector3)();
+        // textures
+        const tempMap = new (0, _three.FramebufferTexture)(16, 16, (0, _three.RGBAFormat));
+        const occlusionMap = new (0, _three.FramebufferTexture)(16, 16, (0, _three.RGBAFormat));
+        // material
+        const geometry = Lensflare.Geometry;
+        const material1a = new (0, _three.RawShaderMaterial)({
+            uniforms: {
+                "scale": {
+                    value: null
+                },
+                "screenPosition": {
+                    value: null
+                }
+            },
+            vertexShader: /* glsl */ `
+
+				precision highp float;
+
+				uniform vec3 screenPosition;
+				uniform vec2 scale;
+
+				attribute vec3 position;
+
+				void main() {
+
+					gl_Position = vec4( position.xy * scale + screenPosition.xy, screenPosition.z, 1.0 );
+
+				}`,
+            fragmentShader: /* glsl */ `
+
+				precision highp float;
+
+				void main() {
+
+					gl_FragColor = vec4( 1.0, 0.0, 1.0, 1.0 );
+
+				}`,
+            depthTest: true,
+            depthWrite: false,
+            transparent: false
+        });
+        const material1b = new (0, _three.RawShaderMaterial)({
+            uniforms: {
+                "map": {
+                    value: tempMap
+                },
+                "scale": {
+                    value: null
+                },
+                "screenPosition": {
+                    value: null
+                }
+            },
+            vertexShader: /* glsl */ `
+
+				precision highp float;
+
+				uniform vec3 screenPosition;
+				uniform vec2 scale;
+
+				attribute vec3 position;
+				attribute vec2 uv;
+
+				varying vec2 vUV;
+
+				void main() {
+
+					vUV = uv;
+
+					gl_Position = vec4( position.xy * scale + screenPosition.xy, screenPosition.z, 1.0 );
+
+				}`,
+            fragmentShader: /* glsl */ `
+
+				precision highp float;
+
+				uniform sampler2D map;
+
+				varying vec2 vUV;
+
+				void main() {
+
+					gl_FragColor = texture2D( map, vUV );
+
+				}`,
+            depthTest: false,
+            depthWrite: false,
+            transparent: false
+        });
+        // the following object is used for occlusionMap generation
+        const mesh1 = new (0, _three.Mesh)(geometry, material1a);
+        //
+        const elements = [];
+        const shader = LensflareElement.Shader;
+        const material2 = new (0, _three.RawShaderMaterial)({
+            uniforms: {
+                "map": {
+                    value: null
+                },
+                "occlusionMap": {
+                    value: occlusionMap
+                },
+                "color": {
+                    value: new (0, _three.Color)(0xffffff)
+                },
+                "scale": {
+                    value: new (0, _three.Vector2)()
+                },
+                "screenPosition": {
+                    value: new (0, _three.Vector3)()
+                }
+            },
+            vertexShader: shader.vertexShader,
+            fragmentShader: shader.fragmentShader,
+            blending: (0, _three.AdditiveBlending),
+            transparent: true,
+            depthWrite: false
+        });
+        const mesh2 = new (0, _three.Mesh)(geometry, material2);
+        this.addElement = function(element) {
+            elements.push(element);
+        };
+        //
+        const scale = new (0, _three.Vector2)();
+        const screenPositionPixels = new (0, _three.Vector2)();
+        const validArea = new (0, _three.Box2)();
+        const viewport = new (0, _three.Vector4)();
+        this.onBeforeRender = function(renderer, scene, camera) {
+            renderer.getCurrentViewport(viewport);
+            const invAspect = viewport.w / viewport.z;
+            const halfViewportWidth = viewport.z / 2.0;
+            const halfViewportHeight = viewport.w / 2.0;
+            let size = 16 / viewport.w;
+            scale.set(size * invAspect, size);
+            validArea.min.set(viewport.x, viewport.y);
+            validArea.max.set(viewport.x + (viewport.z - 16), viewport.y + (viewport.w - 16));
+            // calculate position in screen space
+            positionView.setFromMatrixPosition(this.matrixWorld);
+            positionView.applyMatrix4(camera.matrixWorldInverse);
+            if (positionView.z > 0) return; // lensflare is behind the camera
+            positionScreen.copy(positionView).applyMatrix4(camera.projectionMatrix);
+            // horizontal and vertical coordinate of the lower left corner of the pixels to copy
+            screenPositionPixels.x = viewport.x + positionScreen.x * halfViewportWidth + halfViewportWidth - 8;
+            screenPositionPixels.y = viewport.y + positionScreen.y * halfViewportHeight + halfViewportHeight - 8;
+            // screen cull
+            if (validArea.containsPoint(screenPositionPixels)) {
+                // save current RGB to temp texture
+                renderer.copyFramebufferToTexture(screenPositionPixels, tempMap);
+                // render pink quad
+                let uniforms = material1a.uniforms;
+                uniforms["scale"].value = scale;
+                uniforms["screenPosition"].value = positionScreen;
+                renderer.renderBufferDirect(camera, null, geometry, material1a, mesh1, null);
+                // copy result to occlusionMap
+                renderer.copyFramebufferToTexture(screenPositionPixels, occlusionMap);
+                // restore graphics
+                uniforms = material1b.uniforms;
+                uniforms["scale"].value = scale;
+                uniforms["screenPosition"].value = positionScreen;
+                renderer.renderBufferDirect(camera, null, geometry, material1b, mesh1, null);
+                // render elements
+                const vecX = -positionScreen.x * 2;
+                const vecY = -positionScreen.y * 2;
+                for(let i = 0, l = elements.length; i < l; i++){
+                    const element = elements[i];
+                    const uniforms1 = material2.uniforms;
+                    uniforms1["color"].value.copy(element.color);
+                    uniforms1["map"].value = element.texture;
+                    uniforms1["screenPosition"].value.x = positionScreen.x + vecX * element.distance;
+                    uniforms1["screenPosition"].value.y = positionScreen.y + vecY * element.distance;
+                    size = element.size / viewport.w;
+                    const invAspect1 = viewport.w / viewport.z;
+                    uniforms1["scale"].value.set(size * invAspect1, size);
+                    material2.uniformsNeedUpdate = true;
+                    renderer.renderBufferDirect(camera, null, geometry, material2, mesh2, null);
+                }
+            }
+        };
+        this.dispose = function() {
+            material1a.dispose();
+            material1b.dispose();
+            material2.dispose();
+            tempMap.dispose();
+            occlusionMap.dispose();
+            for(let i = 0, l = elements.length; i < l; i++)elements[i].texture.dispose();
+        };
+    }
+}
+//
+class LensflareElement {
+    constructor(texture, size = 1, distance = 0, color = new (0, _three.Color)(0xffffff)){
+        this.texture = texture;
+        this.size = size;
+        this.distance = distance;
+        this.color = color;
+    }
+}
+LensflareElement.Shader = {
+    uniforms: {
+        "map": {
+            value: null
+        },
+        "occlusionMap": {
+            value: null
+        },
+        "color": {
+            value: null
+        },
+        "scale": {
+            value: null
+        },
+        "screenPosition": {
+            value: null
+        }
+    },
+    vertexShader: /* glsl */ `
+
+		precision highp float;
+
+		uniform vec3 screenPosition;
+		uniform vec2 scale;
+
+		uniform sampler2D occlusionMap;
+
+		attribute vec3 position;
+		attribute vec2 uv;
+
+		varying vec2 vUV;
+		varying float vVisibility;
+
+		void main() {
+
+			vUV = uv;
+
+			vec2 pos = position.xy;
+
+			vec4 visibility = texture2D( occlusionMap, vec2( 0.1, 0.1 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.5, 0.1 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.9, 0.1 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.9, 0.5 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.9, 0.9 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.5, 0.9 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.1, 0.9 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.1, 0.5 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.5, 0.5 ) );
+
+			vVisibility =        visibility.r / 9.0;
+			vVisibility *= 1.0 - visibility.g / 9.0;
+			vVisibility *=       visibility.b / 9.0;
+
+			gl_Position = vec4( ( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );
+
+		}`,
+    fragmentShader: /* glsl */ `
+
+		precision highp float;
+
+		uniform sampler2D map;
+		uniform vec3 color;
+
+		varying vec2 vUV;
+		varying float vVisibility;
+
+		void main() {
+
+			vec4 texture = texture2D( map, vUV );
+			texture.a *= vVisibility;
+			gl_FragColor = texture;
+			gl_FragColor.rgb *= color;
+
+		}`
+};
+Lensflare.Geometry = function() {
+    const geometry = new (0, _three.BufferGeometry)();
+    const float32Array = new Float32Array([
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        1,
+        -1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        -1,
+        1,
+        0,
+        0,
+        1
+    ]);
+    const interleavedBuffer = new (0, _three.InterleavedBuffer)(float32Array, 5);
+    geometry.setIndex([
+        0,
+        1,
+        2,
+        0,
+        2,
+        3
+    ]);
+    geometry.setAttribute("position", new (0, _three.InterleavedBufferAttribute)(interleavedBuffer, 3, 0, false));
+    geometry.setAttribute("uv", new (0, _three.InterleavedBufferAttribute)(interleavedBuffer, 2, 3, false));
+    return geometry;
+}();
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["jTVc4","1zts3"], "1zts3", "parcelRequire0487")
 
 //# sourceMappingURL=index.3a630cfc.js.map

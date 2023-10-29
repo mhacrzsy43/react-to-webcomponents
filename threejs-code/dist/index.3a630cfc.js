@@ -997,7 +997,7 @@ function recivedMessage(event) {
 // 监听来自 iframe 的消息
 window.addEventListener("message", recivedMessage, false);
 
-},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","lil-gui":"fkEfG","./public/messi2.jpg":"58p3a","three/examples/jsm/helpers/RectAreaLightHelper":"7YxXx","three/examples/jsm/lights/RectAreaLightUniformsLib.js":"kWNzB","237200784f3d23de":"7DfAI","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./public/model/tesla_model_p100d.glb":"65SW3","three/examples/jsm/objects/Lensflare.js":"2AyDW"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","./public/model/tesla_model_p100d.glb":"65SW3","lil-gui":"fkEfG","./public/messi2.jpg":"58p3a","three/examples/jsm/helpers/RectAreaLightHelper":"7YxXx","three/examples/jsm/lights/RectAreaLightUniformsLib.js":"kWNzB","three/examples/jsm/objects/Lensflare.js":"2AyDW","237200784f3d23de":"7DfAI","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ktPTu":[function(require,module,exports) {
 /**
  * @license
  * Copyright 2010-2022 Three.js Authors
@@ -33188,7 +33188,44 @@ function buildNodeHierarchy(nodeId, parentObject, json, parser) {
     return newGeometry;
 }
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fkEfG":[function(require,module,exports) {
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"65SW3":[function(require,module,exports) {
+module.exports = require("bec5e35127a17f25").getBundleURL("8vuqW") + "tesla_model_p100d.86e2c6a6.glb" + "?" + Date.now();
+
+},{"bec5e35127a17f25":"lgJ39"}],"lgJ39":[function(require,module,exports) {
+"use strict";
+var bundleURL = {};
+function getBundleURLCached(id) {
+    var value = bundleURL[id];
+    if (!value) {
+        value = getBundleURL();
+        bundleURL[id] = value;
+    }
+    return value;
+}
+function getBundleURL() {
+    try {
+        throw new Error();
+    } catch (err) {
+        var matches = ("" + err.stack).match(/(https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/[^)\n]+/g);
+        if (matches) // The first two stack frames will be this function and getBundleURLCached.
+        // Use the 3rd one, which will be a runtime in the original bundle.
+        return getBaseURL(matches[2]);
+    }
+    return "/";
+}
+function getBaseURL(url) {
+    return ("" + url).replace(/^((?:https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/.+)\/[^/]+$/, "$1") + "/";
+} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+function getOrigin(url) {
+    var matches = ("" + url).match(/(https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/[^/]+/);
+    if (!matches) throw new Error("Origin not found");
+    return matches[0];
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+
+},{}],"fkEfG":[function(require,module,exports) {
 /**
  * lil-gui
  * https://lil-gui.georgealways.com
@@ -34923,41 +34960,7 @@ exports.default = GUI;
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"58p3a":[function(require,module,exports) {
 module.exports = require("eb5ccdfb1523a8f8").getBundleURL("8vuqW") + "messi2.a8df5d99.jpg" + "?" + Date.now();
 
-},{"eb5ccdfb1523a8f8":"lgJ39"}],"lgJ39":[function(require,module,exports) {
-"use strict";
-var bundleURL = {};
-function getBundleURLCached(id) {
-    var value = bundleURL[id];
-    if (!value) {
-        value = getBundleURL();
-        bundleURL[id] = value;
-    }
-    return value;
-}
-function getBundleURL() {
-    try {
-        throw new Error();
-    } catch (err) {
-        var matches = ("" + err.stack).match(/(https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/[^)\n]+/g);
-        if (matches) // The first two stack frames will be this function and getBundleURLCached.
-        // Use the 3rd one, which will be a runtime in the original bundle.
-        return getBaseURL(matches[2]);
-    }
-    return "/";
-}
-function getBaseURL(url) {
-    return ("" + url).replace(/^((?:https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/.+)\/[^/]+$/, "$1") + "/";
-} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
-function getOrigin(url) {
-    var matches = ("" + url).match(/(https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/[^/]+/);
-    if (!matches) throw new Error("Origin not found");
-    return matches[0];
-}
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-exports.getOrigin = getOrigin;
-
-},{}],"7YxXx":[function(require,module,exports) {
+},{"eb5ccdfb1523a8f8":"lgJ39"}],"7YxXx":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "RectAreaLightHelper", ()=>RectAreaLightHelper);
@@ -67863,6 +67866,335 @@ class RectAreaLightUniformsLib {
     }
 }
 
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2AyDW":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Lensflare", ()=>Lensflare);
+parcelHelpers.export(exports, "LensflareElement", ()=>LensflareElement);
+var _three = require("three");
+class Lensflare extends (0, _three.Mesh) {
+    constructor(){
+        super(Lensflare.Geometry, new (0, _three.MeshBasicMaterial)({
+            opacity: 0,
+            transparent: true
+        }));
+        this.isLensflare = true;
+        this.type = "Lensflare";
+        this.frustumCulled = false;
+        this.renderOrder = Infinity;
+        //
+        const positionScreen = new (0, _three.Vector3)();
+        const positionView = new (0, _three.Vector3)();
+        // textures
+        const tempMap = new (0, _three.FramebufferTexture)(16, 16, (0, _three.RGBAFormat));
+        const occlusionMap = new (0, _three.FramebufferTexture)(16, 16, (0, _three.RGBAFormat));
+        // material
+        const geometry = Lensflare.Geometry;
+        const material1a = new (0, _three.RawShaderMaterial)({
+            uniforms: {
+                "scale": {
+                    value: null
+                },
+                "screenPosition": {
+                    value: null
+                }
+            },
+            vertexShader: /* glsl */ `
+
+				precision highp float;
+
+				uniform vec3 screenPosition;
+				uniform vec2 scale;
+
+				attribute vec3 position;
+
+				void main() {
+
+					gl_Position = vec4( position.xy * scale + screenPosition.xy, screenPosition.z, 1.0 );
+
+				}`,
+            fragmentShader: /* glsl */ `
+
+				precision highp float;
+
+				void main() {
+
+					gl_FragColor = vec4( 1.0, 0.0, 1.0, 1.0 );
+
+				}`,
+            depthTest: true,
+            depthWrite: false,
+            transparent: false
+        });
+        const material1b = new (0, _three.RawShaderMaterial)({
+            uniforms: {
+                "map": {
+                    value: tempMap
+                },
+                "scale": {
+                    value: null
+                },
+                "screenPosition": {
+                    value: null
+                }
+            },
+            vertexShader: /* glsl */ `
+
+				precision highp float;
+
+				uniform vec3 screenPosition;
+				uniform vec2 scale;
+
+				attribute vec3 position;
+				attribute vec2 uv;
+
+				varying vec2 vUV;
+
+				void main() {
+
+					vUV = uv;
+
+					gl_Position = vec4( position.xy * scale + screenPosition.xy, screenPosition.z, 1.0 );
+
+				}`,
+            fragmentShader: /* glsl */ `
+
+				precision highp float;
+
+				uniform sampler2D map;
+
+				varying vec2 vUV;
+
+				void main() {
+
+					gl_FragColor = texture2D( map, vUV );
+
+				}`,
+            depthTest: false,
+            depthWrite: false,
+            transparent: false
+        });
+        // the following object is used for occlusionMap generation
+        const mesh1 = new (0, _three.Mesh)(geometry, material1a);
+        //
+        const elements = [];
+        const shader = LensflareElement.Shader;
+        const material2 = new (0, _three.RawShaderMaterial)({
+            uniforms: {
+                "map": {
+                    value: null
+                },
+                "occlusionMap": {
+                    value: occlusionMap
+                },
+                "color": {
+                    value: new (0, _three.Color)(0xffffff)
+                },
+                "scale": {
+                    value: new (0, _three.Vector2)()
+                },
+                "screenPosition": {
+                    value: new (0, _three.Vector3)()
+                }
+            },
+            vertexShader: shader.vertexShader,
+            fragmentShader: shader.fragmentShader,
+            blending: (0, _three.AdditiveBlending),
+            transparent: true,
+            depthWrite: false
+        });
+        const mesh2 = new (0, _three.Mesh)(geometry, material2);
+        this.addElement = function(element) {
+            elements.push(element);
+        };
+        //
+        const scale = new (0, _three.Vector2)();
+        const screenPositionPixels = new (0, _three.Vector2)();
+        const validArea = new (0, _three.Box2)();
+        const viewport = new (0, _three.Vector4)();
+        this.onBeforeRender = function(renderer, scene, camera) {
+            renderer.getCurrentViewport(viewport);
+            const invAspect = viewport.w / viewport.z;
+            const halfViewportWidth = viewport.z / 2.0;
+            const halfViewportHeight = viewport.w / 2.0;
+            let size = 16 / viewport.w;
+            scale.set(size * invAspect, size);
+            validArea.min.set(viewport.x, viewport.y);
+            validArea.max.set(viewport.x + (viewport.z - 16), viewport.y + (viewport.w - 16));
+            // calculate position in screen space
+            positionView.setFromMatrixPosition(this.matrixWorld);
+            positionView.applyMatrix4(camera.matrixWorldInverse);
+            if (positionView.z > 0) return; // lensflare is behind the camera
+            positionScreen.copy(positionView).applyMatrix4(camera.projectionMatrix);
+            // horizontal and vertical coordinate of the lower left corner of the pixels to copy
+            screenPositionPixels.x = viewport.x + positionScreen.x * halfViewportWidth + halfViewportWidth - 8;
+            screenPositionPixels.y = viewport.y + positionScreen.y * halfViewportHeight + halfViewportHeight - 8;
+            // screen cull
+            if (validArea.containsPoint(screenPositionPixels)) {
+                // save current RGB to temp texture
+                renderer.copyFramebufferToTexture(screenPositionPixels, tempMap);
+                // render pink quad
+                let uniforms = material1a.uniforms;
+                uniforms["scale"].value = scale;
+                uniforms["screenPosition"].value = positionScreen;
+                renderer.renderBufferDirect(camera, null, geometry, material1a, mesh1, null);
+                // copy result to occlusionMap
+                renderer.copyFramebufferToTexture(screenPositionPixels, occlusionMap);
+                // restore graphics
+                uniforms = material1b.uniforms;
+                uniforms["scale"].value = scale;
+                uniforms["screenPosition"].value = positionScreen;
+                renderer.renderBufferDirect(camera, null, geometry, material1b, mesh1, null);
+                // render elements
+                const vecX = -positionScreen.x * 2;
+                const vecY = -positionScreen.y * 2;
+                for(let i = 0, l = elements.length; i < l; i++){
+                    const element = elements[i];
+                    const uniforms1 = material2.uniforms;
+                    uniforms1["color"].value.copy(element.color);
+                    uniforms1["map"].value = element.texture;
+                    uniforms1["screenPosition"].value.x = positionScreen.x + vecX * element.distance;
+                    uniforms1["screenPosition"].value.y = positionScreen.y + vecY * element.distance;
+                    size = element.size / viewport.w;
+                    const invAspect1 = viewport.w / viewport.z;
+                    uniforms1["scale"].value.set(size * invAspect1, size);
+                    material2.uniformsNeedUpdate = true;
+                    renderer.renderBufferDirect(camera, null, geometry, material2, mesh2, null);
+                }
+            }
+        };
+        this.dispose = function() {
+            material1a.dispose();
+            material1b.dispose();
+            material2.dispose();
+            tempMap.dispose();
+            occlusionMap.dispose();
+            for(let i = 0, l = elements.length; i < l; i++)elements[i].texture.dispose();
+        };
+    }
+}
+//
+class LensflareElement {
+    constructor(texture, size = 1, distance = 0, color = new (0, _three.Color)(0xffffff)){
+        this.texture = texture;
+        this.size = size;
+        this.distance = distance;
+        this.color = color;
+    }
+}
+LensflareElement.Shader = {
+    uniforms: {
+        "map": {
+            value: null
+        },
+        "occlusionMap": {
+            value: null
+        },
+        "color": {
+            value: null
+        },
+        "scale": {
+            value: null
+        },
+        "screenPosition": {
+            value: null
+        }
+    },
+    vertexShader: /* glsl */ `
+
+		precision highp float;
+
+		uniform vec3 screenPosition;
+		uniform vec2 scale;
+
+		uniform sampler2D occlusionMap;
+
+		attribute vec3 position;
+		attribute vec2 uv;
+
+		varying vec2 vUV;
+		varying float vVisibility;
+
+		void main() {
+
+			vUV = uv;
+
+			vec2 pos = position.xy;
+
+			vec4 visibility = texture2D( occlusionMap, vec2( 0.1, 0.1 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.5, 0.1 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.9, 0.1 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.9, 0.5 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.9, 0.9 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.5, 0.9 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.1, 0.9 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.1, 0.5 ) );
+			visibility += texture2D( occlusionMap, vec2( 0.5, 0.5 ) );
+
+			vVisibility =        visibility.r / 9.0;
+			vVisibility *= 1.0 - visibility.g / 9.0;
+			vVisibility *=       visibility.b / 9.0;
+
+			gl_Position = vec4( ( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );
+
+		}`,
+    fragmentShader: /* glsl */ `
+
+		precision highp float;
+
+		uniform sampler2D map;
+		uniform vec3 color;
+
+		varying vec2 vUV;
+		varying float vVisibility;
+
+		void main() {
+
+			vec4 texture = texture2D( map, vUV );
+			texture.a *= vVisibility;
+			gl_FragColor = texture;
+			gl_FragColor.rgb *= color;
+
+		}`
+};
+Lensflare.Geometry = function() {
+    const geometry = new (0, _three.BufferGeometry)();
+    const float32Array = new Float32Array([
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        1,
+        -1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        -1,
+        1,
+        0,
+        0,
+        1
+    ]);
+    const interleavedBuffer = new (0, _three.InterleavedBuffer)(float32Array, 5);
+    geometry.setIndex([
+        0,
+        1,
+        2,
+        0,
+        2,
+        3
+    ]);
+    geometry.setAttribute("position", new (0, _three.InterleavedBufferAttribute)(interleavedBuffer, 3, 0, false));
+    geometry.setAttribute("uv", new (0, _three.InterleavedBufferAttribute)(interleavedBuffer, 2, 3, false));
+    return geometry;
+}();
+
 },{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7DfAI":[function(require,module,exports) {
 /**
  * The Ease class provides a collection of easing functions for use with tween.js.
@@ -68662,338 +68994,6 @@ process.umask = function() {
     return 0;
 };
 
-},{}],"65SW3":[function(require,module,exports) {
-module.exports = require("bec5e35127a17f25").getBundleURL("8vuqW") + "tesla_model_p100d.86e2c6a6.glb" + "?" + Date.now();
-
-},{"bec5e35127a17f25":"lgJ39"}],"2AyDW":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Lensflare", ()=>Lensflare);
-parcelHelpers.export(exports, "LensflareElement", ()=>LensflareElement);
-var _three = require("three");
-class Lensflare extends (0, _three.Mesh) {
-    constructor(){
-        super(Lensflare.Geometry, new (0, _three.MeshBasicMaterial)({
-            opacity: 0,
-            transparent: true
-        }));
-        this.isLensflare = true;
-        this.type = "Lensflare";
-        this.frustumCulled = false;
-        this.renderOrder = Infinity;
-        //
-        const positionScreen = new (0, _three.Vector3)();
-        const positionView = new (0, _three.Vector3)();
-        // textures
-        const tempMap = new (0, _three.FramebufferTexture)(16, 16, (0, _three.RGBAFormat));
-        const occlusionMap = new (0, _three.FramebufferTexture)(16, 16, (0, _three.RGBAFormat));
-        // material
-        const geometry = Lensflare.Geometry;
-        const material1a = new (0, _three.RawShaderMaterial)({
-            uniforms: {
-                "scale": {
-                    value: null
-                },
-                "screenPosition": {
-                    value: null
-                }
-            },
-            vertexShader: /* glsl */ `
-
-				precision highp float;
-
-				uniform vec3 screenPosition;
-				uniform vec2 scale;
-
-				attribute vec3 position;
-
-				void main() {
-
-					gl_Position = vec4( position.xy * scale + screenPosition.xy, screenPosition.z, 1.0 );
-
-				}`,
-            fragmentShader: /* glsl */ `
-
-				precision highp float;
-
-				void main() {
-
-					gl_FragColor = vec4( 1.0, 0.0, 1.0, 1.0 );
-
-				}`,
-            depthTest: true,
-            depthWrite: false,
-            transparent: false
-        });
-        const material1b = new (0, _three.RawShaderMaterial)({
-            uniforms: {
-                "map": {
-                    value: tempMap
-                },
-                "scale": {
-                    value: null
-                },
-                "screenPosition": {
-                    value: null
-                }
-            },
-            vertexShader: /* glsl */ `
-
-				precision highp float;
-
-				uniform vec3 screenPosition;
-				uniform vec2 scale;
-
-				attribute vec3 position;
-				attribute vec2 uv;
-
-				varying vec2 vUV;
-
-				void main() {
-
-					vUV = uv;
-
-					gl_Position = vec4( position.xy * scale + screenPosition.xy, screenPosition.z, 1.0 );
-
-				}`,
-            fragmentShader: /* glsl */ `
-
-				precision highp float;
-
-				uniform sampler2D map;
-
-				varying vec2 vUV;
-
-				void main() {
-
-					gl_FragColor = texture2D( map, vUV );
-
-				}`,
-            depthTest: false,
-            depthWrite: false,
-            transparent: false
-        });
-        // the following object is used for occlusionMap generation
-        const mesh1 = new (0, _three.Mesh)(geometry, material1a);
-        //
-        const elements = [];
-        const shader = LensflareElement.Shader;
-        const material2 = new (0, _three.RawShaderMaterial)({
-            uniforms: {
-                "map": {
-                    value: null
-                },
-                "occlusionMap": {
-                    value: occlusionMap
-                },
-                "color": {
-                    value: new (0, _three.Color)(0xffffff)
-                },
-                "scale": {
-                    value: new (0, _three.Vector2)()
-                },
-                "screenPosition": {
-                    value: new (0, _three.Vector3)()
-                }
-            },
-            vertexShader: shader.vertexShader,
-            fragmentShader: shader.fragmentShader,
-            blending: (0, _three.AdditiveBlending),
-            transparent: true,
-            depthWrite: false
-        });
-        const mesh2 = new (0, _three.Mesh)(geometry, material2);
-        this.addElement = function(element) {
-            elements.push(element);
-        };
-        //
-        const scale = new (0, _three.Vector2)();
-        const screenPositionPixels = new (0, _three.Vector2)();
-        const validArea = new (0, _three.Box2)();
-        const viewport = new (0, _three.Vector4)();
-        this.onBeforeRender = function(renderer, scene, camera) {
-            renderer.getCurrentViewport(viewport);
-            const invAspect = viewport.w / viewport.z;
-            const halfViewportWidth = viewport.z / 2.0;
-            const halfViewportHeight = viewport.w / 2.0;
-            let size = 16 / viewport.w;
-            scale.set(size * invAspect, size);
-            validArea.min.set(viewport.x, viewport.y);
-            validArea.max.set(viewport.x + (viewport.z - 16), viewport.y + (viewport.w - 16));
-            // calculate position in screen space
-            positionView.setFromMatrixPosition(this.matrixWorld);
-            positionView.applyMatrix4(camera.matrixWorldInverse);
-            if (positionView.z > 0) return; // lensflare is behind the camera
-            positionScreen.copy(positionView).applyMatrix4(camera.projectionMatrix);
-            // horizontal and vertical coordinate of the lower left corner of the pixels to copy
-            screenPositionPixels.x = viewport.x + positionScreen.x * halfViewportWidth + halfViewportWidth - 8;
-            screenPositionPixels.y = viewport.y + positionScreen.y * halfViewportHeight + halfViewportHeight - 8;
-            // screen cull
-            if (validArea.containsPoint(screenPositionPixels)) {
-                // save current RGB to temp texture
-                renderer.copyFramebufferToTexture(screenPositionPixels, tempMap);
-                // render pink quad
-                let uniforms = material1a.uniforms;
-                uniforms["scale"].value = scale;
-                uniforms["screenPosition"].value = positionScreen;
-                renderer.renderBufferDirect(camera, null, geometry, material1a, mesh1, null);
-                // copy result to occlusionMap
-                renderer.copyFramebufferToTexture(screenPositionPixels, occlusionMap);
-                // restore graphics
-                uniforms = material1b.uniforms;
-                uniforms["scale"].value = scale;
-                uniforms["screenPosition"].value = positionScreen;
-                renderer.renderBufferDirect(camera, null, geometry, material1b, mesh1, null);
-                // render elements
-                const vecX = -positionScreen.x * 2;
-                const vecY = -positionScreen.y * 2;
-                for(let i = 0, l = elements.length; i < l; i++){
-                    const element = elements[i];
-                    const uniforms1 = material2.uniforms;
-                    uniforms1["color"].value.copy(element.color);
-                    uniforms1["map"].value = element.texture;
-                    uniforms1["screenPosition"].value.x = positionScreen.x + vecX * element.distance;
-                    uniforms1["screenPosition"].value.y = positionScreen.y + vecY * element.distance;
-                    size = element.size / viewport.w;
-                    const invAspect1 = viewport.w / viewport.z;
-                    uniforms1["scale"].value.set(size * invAspect1, size);
-                    material2.uniformsNeedUpdate = true;
-                    renderer.renderBufferDirect(camera, null, geometry, material2, mesh2, null);
-                }
-            }
-        };
-        this.dispose = function() {
-            material1a.dispose();
-            material1b.dispose();
-            material2.dispose();
-            tempMap.dispose();
-            occlusionMap.dispose();
-            for(let i = 0, l = elements.length; i < l; i++)elements[i].texture.dispose();
-        };
-    }
-}
-//
-class LensflareElement {
-    constructor(texture, size = 1, distance = 0, color = new (0, _three.Color)(0xffffff)){
-        this.texture = texture;
-        this.size = size;
-        this.distance = distance;
-        this.color = color;
-    }
-}
-LensflareElement.Shader = {
-    uniforms: {
-        "map": {
-            value: null
-        },
-        "occlusionMap": {
-            value: null
-        },
-        "color": {
-            value: null
-        },
-        "scale": {
-            value: null
-        },
-        "screenPosition": {
-            value: null
-        }
-    },
-    vertexShader: /* glsl */ `
-
-		precision highp float;
-
-		uniform vec3 screenPosition;
-		uniform vec2 scale;
-
-		uniform sampler2D occlusionMap;
-
-		attribute vec3 position;
-		attribute vec2 uv;
-
-		varying vec2 vUV;
-		varying float vVisibility;
-
-		void main() {
-
-			vUV = uv;
-
-			vec2 pos = position.xy;
-
-			vec4 visibility = texture2D( occlusionMap, vec2( 0.1, 0.1 ) );
-			visibility += texture2D( occlusionMap, vec2( 0.5, 0.1 ) );
-			visibility += texture2D( occlusionMap, vec2( 0.9, 0.1 ) );
-			visibility += texture2D( occlusionMap, vec2( 0.9, 0.5 ) );
-			visibility += texture2D( occlusionMap, vec2( 0.9, 0.9 ) );
-			visibility += texture2D( occlusionMap, vec2( 0.5, 0.9 ) );
-			visibility += texture2D( occlusionMap, vec2( 0.1, 0.9 ) );
-			visibility += texture2D( occlusionMap, vec2( 0.1, 0.5 ) );
-			visibility += texture2D( occlusionMap, vec2( 0.5, 0.5 ) );
-
-			vVisibility =        visibility.r / 9.0;
-			vVisibility *= 1.0 - visibility.g / 9.0;
-			vVisibility *=       visibility.b / 9.0;
-
-			gl_Position = vec4( ( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );
-
-		}`,
-    fragmentShader: /* glsl */ `
-
-		precision highp float;
-
-		uniform sampler2D map;
-		uniform vec3 color;
-
-		varying vec2 vUV;
-		varying float vVisibility;
-
-		void main() {
-
-			vec4 texture = texture2D( map, vUV );
-			texture.a *= vVisibility;
-			gl_FragColor = texture;
-			gl_FragColor.rgb *= color;
-
-		}`
-};
-Lensflare.Geometry = function() {
-    const geometry = new (0, _three.BufferGeometry)();
-    const float32Array = new Float32Array([
-        -1,
-        -1,
-        0,
-        0,
-        0,
-        1,
-        -1,
-        0,
-        1,
-        0,
-        1,
-        1,
-        0,
-        1,
-        1,
-        -1,
-        1,
-        0,
-        0,
-        1
-    ]);
-    const interleavedBuffer = new (0, _three.InterleavedBuffer)(float32Array, 5);
-    geometry.setIndex([
-        0,
-        1,
-        2,
-        0,
-        2,
-        3
-    ]);
-    geometry.setAttribute("position", new (0, _three.InterleavedBufferAttribute)(interleavedBuffer, 3, 0, false));
-    geometry.setAttribute("uv", new (0, _three.InterleavedBufferAttribute)(interleavedBuffer, 2, 3, false));
-    return geometry;
-}();
-
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["jTVc4","1zts3"], "1zts3", "parcelRequire0487")
+},{}]},["jTVc4","1zts3"], "1zts3", "parcelRequire0487")
 
 //# sourceMappingURL=index.3a630cfc.js.map

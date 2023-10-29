@@ -56,54 +56,54 @@ async function startRecording() {
           if(res.data?.answerDmeasyData.answer == '抱歉，我还没想好怎么回答您的问题'){
 
           }else if(res.data?.ttsSynthesizeData?.audio_url){
-              // 获取iframe dom
-              var iframeDom = document.getElementById('iframeDom')
-              const question = res.data.answerDmeasyData?.simquery
-              const host = 'http://localhost:50481/'
-              iframeDom.contentWindow.postMessage({ type: 'AudioBroadcast', data: res.data?.ttsSynthesizeData?.audio_url, bodyMotion:3, isFirst:false }, '*')
-              if(question.indexOf('开车门') > -1){
-                  // 向父级页面发送消息
-                  setTimeout(() => {
-                    window.parent.postMessage('carOpen', host);
-                  },3000)
-              }else if(question.indexOf('关车门') > -1 || question.indexOf('关闭车门') > -1){
-                  setTimeout(() => {
-                      window.parent.postMessage('carClose', host);
-                  },3000)
-              }else if(question.indexOf('看下车内') > -1 || question.indexOf('看看车内') > -1 || question.indexOf('看看车内') > -1){
-                  setTimeout(() => {
-                    window.parent.postMessage('carIn', host);
-                  },5000)
-              }else if(question.indexOf('看下车身') > -1 || question.indexOf('看看车身') > -1 || question.indexOf('看看车内') > -1){
-                setTimeout(() => {
-                  window.parent.postMessage('carOut', host);
-                },3000)
-              }else if(question.indexOf('转动看看') > -1){
-                setTimeout(() => {
-                  window.parent.postMessage('autoRotate', host);
-                },3000)
-              }else if(question.indexOf('停止转动') > -1){
-                setTimeout(() => {
-                  window.parent.postMessage('stopRotate', host);
-                },5000)
-              }else if(question.indexOf('金色款式') > -1 || question.indexOf('金属款式') > -1){
-                setTimeout(() => {
-                  window.parent.postMessage('changeToGoldColor', host);
-                },5000)
-              }else if(question.indexOf('黑色款式') > -1 || question.indexOf('黑色的款式') > -1){
-                setTimeout(() => {
-                  window.parent.postMessage('changeToBlackColor', host);
-                },5000)
-              }else if(question.indexOf('请开车灯') > -1 || question.indexOf('开车灯') > -1){
-                setTimeout(() => {
-                  window.parent.postMessage('turnOnHeadlight', host);
-                },5000)
-              }else if(question.indexOf('请关车灯') > -1 || question.indexOf('关闭车灯') > -1){
-                setTimeout(() => {
-                  window.parent.postMessage('turnOffHeadlight', host);
-                },5000)
-              }
-          }
+                        // 获取iframe dom
+                        var iframeDom = document.getElementById('iframeDom')
+                        const question = res.data.answerDmeasyData?.simquery
+                        const host = 'http://localhost:1234/'
+                        iframeDom.contentWindow.postMessage({ type: 'AudioBroadcast', data: res.data?.ttsSynthesizeData?.audio_url, bodyMotion:3, isFirst:false }, '*')
+                        if(question.indexOf('开车门') > -1){
+                            // 向父级页面发送消息
+                            setTimeout(() => {
+                              window.parent.postMessage('carOpen', host);
+                            },3000)
+                        }else if(question.indexOf('关车门') > -1 || question.indexOf('关闭车门') > -1||question.indexOf('关下车门') > -1){
+                            setTimeout(() => {
+                                window.parent.postMessage('carClose', host);
+                            },3000)
+                        }else if(question.indexOf('看下车内') > -1 || question.indexOf('看看车内') > -1 || question.indexOf('车内') > -1){
+                            setTimeout(() => {
+                              window.parent.postMessage('carIn', host);
+                            },5000)
+                        }else if(question.indexOf('看下车身') > -1 || question.indexOf('看看车身') > -1|| question.indexOf('车身') > -1){
+                          setTimeout(() => {
+                            window.parent.postMessage('carOut', host);
+                          },3000)
+                        }else if(question.indexOf('转动看看') > -1|| question.indexOf('转下看看') > -1){
+                          setTimeout(() => {
+                            window.parent.postMessage('autoRotate', host);
+                          },3000)
+                        }else if(question.indexOf('停止转动') > -1|| question.indexOf('停下转动') > -1|| question.indexOf('不用转动') > -1){
+                          setTimeout(() => {
+                            window.parent.postMessage('stopRotate', host);
+                          },5000)
+                        }else if(question.indexOf('金色款式') > -1 || question.indexOf('金属款式') > -1){
+                          setTimeout(() => {
+                            window.parent.postMessage('changeToGoldColor', host);
+                          },5000)
+                        }else if(question.indexOf('黑色款式') > -1 || question.indexOf('黑色的款式') > -1){
+                          setTimeout(() => {
+                            window.parent.postMessage('changeToBlackColor', host);
+                          },5000)
+                        }else if(question.indexOf('请开车灯') > -1 || question.indexOf('开车灯') > -1|| question.indexOf('开下车灯') > -1){
+                          setTimeout(() => {
+                            window.parent.postMessage('turnOnHeadlight', host);
+                          },5000)
+                        }else if(question.indexOf('关车灯') > -1 || question.indexOf('关闭车灯') > -1|| question.indexOf('关下车灯') > -1){
+                          setTimeout(() => {
+                            window.parent.postMessage('turnOffHeadlight', host);
+                          },5000)
+                        }
+                    }
         }
       }).catch(err => {
         console.log(err, 'err')

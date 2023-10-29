@@ -15,7 +15,7 @@ function generateUUID() {
 
 function getValue(id) {
   if(id == 'AccessToken'){
-    return "c1f2db45332c4de0a1afcc6ee9b8a39c"
+    return "7083ca03cfa24a3c830bcd01f37408a2"
   }else if(id == 'ASR-Appkey'){
     return "YG5Hx595bmk6HZGl"
   }
